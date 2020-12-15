@@ -1,0 +1,30 @@
+version: "3.8"
+
+services:
+  app:
+    build: .
+    image: gsong/django-postgres
+    container_name: edb-app
+    hostname: app
+    env_file:
+      - .env
+    command: ./manage.py runserver 0.0.0.0:${APP_PORT:-8000}
+    init: true
+    volumes:
+      - ./.data/services/app/bash_history:/root/.bash_history
+      - ./.data/services/app/ipython/:/root/.ipython
+      - .:/var/projects
+    ports:
+      - "${APP_PORT:-8000}:${APP_PORT:-8000}"
+
+  db:
+    image: postgres:13-alpine
+    container_name: edb-db
+    hostname: db
+    env_file:
+      - .env
+    volumes:
+      - ./.data/db:/var/lib/postgresql/data
+    healthcheck:
+      test: pg_isready -U postgres || exit 1
+    stop_grace_period: 1m

@@ -6,16 +6,24 @@ services:
     image: gsong/django-postgres
     container_name: edb-app
     hostname: app
+    depends_on:
+      - db
     env_file:
       - .env
-    command: ./manage.py runserver 0.0.0.0:${APP_PORT:-8000}
+    environment:
+      APP_PORT: ${APP_PORT:-5000}
+      POSTGRES_HOST: ${POSTGRES_HOST:-db}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWD: ${POSTGRES_PASSWD:-password}
+      POSTGRES_DB: ${POSTGRES_DB:-demo}
+    command: bin/start-dev-server.sh
     init: true
     volumes:
       - ./.data/services/app/bash_history:/root/.bash_history
       - ./.data/services/app/ipython/:/root/.ipython
       - .:/var/projects
     ports:
-      - "${APP_PORT:-8000}:${APP_PORT:-8000}"
+      - "${APP_PORT:-5000}:${APP_PORT:-5000}"
 
   db:
     image: postgres:13-alpine

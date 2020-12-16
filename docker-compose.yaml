@@ -8,13 +8,11 @@ services:
     hostname: app
     depends_on:
       - db
-    env_file:
-      - .env
     environment:
       APP_PORT: ${APP_PORT:-5000}
       POSTGRES_HOST: ${POSTGRES_HOST:-db}
       POSTGRES_USER: ${POSTGRES_USER:-postgres}
-      POSTGRES_PASSWD: ${POSTGRES_PASSWD:-password}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-password}
       POSTGRES_DB: ${POSTGRES_DB:-demo}
     command: bin/start-dev-server.sh
     init: true
@@ -29,8 +27,9 @@ services:
     image: postgres:13-alpine
     container_name: edb-db
     hostname: db
-    env_file:
-      - .env
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-password}
+      POSTGRES_DB: ${POSTGRES_DB:-demo}
     volumes:
       - ./.data/db:/var/lib/postgresql/data
     healthcheck:
